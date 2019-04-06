@@ -11,9 +11,32 @@ class App extends React.Component {
         fishes: {},
         order : {}
     };
+
+    componentDidMount(){
+      console.log("MOUNTED")
+      const {params} = this.props.match;
+      const localStorageRef = localStorage.getItem(params.storeId);
+      if (localStorageRef){
+        this.setState({order : JSON.parse(localStorageRef)})
+      }
+    }
+
+    componentDidUpdate(){
+      console.log("UPDATED")
+    }
+
+    componentWillUnmount(){
+      console.log("UNMOUNTED")
+      localStorage.setItem(
+        this.props.match.params.storeId,
+        JSON.stringify(this.state.order)
+      )
+    }
+
+
+
+
     // ANY METHOD THAT UPDATES STATE MUST BE DECLARED WHERE THE STATES ARE DECLARED!
-
-
     addFish = (fish)=>{
         console.log("Adding a fish!");
         // UPDATING STATE
@@ -33,6 +56,12 @@ class App extends React.Component {
 
     };
 
+    addToOrder = (key) =>{
+      var order = {...this.state.order};
+      order[key] = order[key] + 1 || 1;
+      this.setState({order});
+    }
+
     render() {
     return (
       <div className="catch-of-the-day">
@@ -40,13 +69,13 @@ class App extends React.Component {
         <div className="menu">
           <Header tagline="ALEX" age={500} />
           <ul className="fishes">
-          {Object.keys(this.state.fishes).map(key => <Fish key={key} details={this.state.fishes[key]} />)}
+          {Object.keys(this.state.fishes).map(key => <Fish key={key} details={this.state.fishes[key]} addToOrder={this.addToOrder} index={key}/>)}
           
           </ul>
 
         </div>
 
-        <Order />
+        <Order fishes = {this.state.fishes} order = {this.state.order}/>
         <Inventory addFish={this.addFish} loadSampleFishes={this.loadSampleFishes}/>
 
 
