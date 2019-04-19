@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types'
+
 import Header from './Header';
 import Inventory from './Inventory';
 import Order from './Order';
@@ -6,6 +8,11 @@ import sampleFishes from '../sample-fishes';
 import Fish from './Fish'
 
 class App extends React.Component {
+
+    static propTypes = {
+      match : PropTypes.object
+    }
+
 
     state={
         fishes: {},
@@ -62,6 +69,44 @@ class App extends React.Component {
       this.setState({order});
     }
 
+    updateFish = (key, fish) =>{
+      const fishes = {...this.state.fish}
+      fishes[key] = fish
+      this.setState({fishes})
+    }
+
+    deleteFish = (key) => {
+      //1 take copy of state
+      const fishes ={...this.state.fishes};
+      // 2. updated state
+      delete fishes[key];
+      this.setState({fishes});
+      // fishes[key] = null; //do null since firebase requires the deleted fish to be set to null
+      // // 3.update
+      // this.setState({fishes});
+      // var fishes = {};
+      // for (var i = 0;i<Object.keys(this.state.fishes).length;i++){
+        
+      //   if (i != key){
+      //     console.log("HERE", i)
+      //     fishes.append(Object.keys(this.state.fishes)[i])
+      //   }
+      // }
+      
+      // console.log("HERE", fishes, key, this.state.fishes.length, this.state.fishes)
+      // this.setState({fishes});
+    }
+
+    removeFromOrder = (key) =>{
+      //1 take copy of state
+      const order ={...this.state.order};
+      // 2. updated state
+      delete order[key]; 
+      // 3.update
+      this.setState({order});
+      
+    }
+
     render() {
     return (
       <div className="catch-of-the-day">
@@ -75,8 +120,8 @@ class App extends React.Component {
 
         </div>
 
-        <Order fishes = {this.state.fishes} order = {this.state.order}/>
-        <Inventory addFish={this.addFish} loadSampleFishes={this.loadSampleFishes}/>
+        <Order fishes = {this.state.fishes} order = {this.state.order} removeFromOrder={this.removeFromOrder}/>
+        <Inventory deleteFish = {this.deleteFish} addFish={this.addFish} updateFish={this.updateFish} loadSampleFishes={this.loadSampleFishes} fishes={this.state.fishes}/>
 
 
       </div>
